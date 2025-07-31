@@ -1,3 +1,7 @@
+# OCR-based unreachable page detection
+from PIL import Image
+import pytesseract
+
 def build_possible_urls(ip, port, service):
     """
     Always try both http and https versions of the IP:port, regardless of service.
@@ -10,11 +14,6 @@ def build_possible_urls(ip, port, service):
     ]
 
     return urls
-
-
-# OCR-based unreachable page detection
-from PIL import Image
-import pytesseract
 
 def is_unreachable_screenshot(screenshot_path):
     try:

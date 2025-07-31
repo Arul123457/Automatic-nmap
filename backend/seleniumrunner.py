@@ -13,7 +13,7 @@ def run_selenium_on_targets(targets, screenshot_dir="screenshots", progress_call
 
     options = Options()
 
-    # ✅ Prevent Chrome popup window — silent, invisible mode
+    # Prevent Chrome popup window — silent, invisible mode
     options.add_argument("--headless=new")  # New stable headless mode
     options.add_argument("--disable-gpu")  # Prevents GPU usage for better performance in headless
     options.add_argument("--no-sandbox")  # Required for root users or Docker
@@ -25,7 +25,7 @@ def run_selenium_on_targets(targets, screenshot_dir="screenshots", progress_call
     options.add_argument("--ignore-certificate-errors")  # Accept invalid/self-signed certs
     options.add_argument("--start-maximized")  # Prevents initial small window if not headless
 
-    # 🛑 Optional: Turn off verbose logs
+    # Optional: Turn off verbose logs
     options.add_experimental_option("excludeSwitches", ["enable-logging"])
     options.add_experimental_option("useAutomationExtension", False)
 

@@ -3,7 +3,7 @@ from openpyxl.drawing.image import Image as ExcelImage
 from openpyxl.utils import get_column_letter
 import os
 
-from utils import is_unreachable_screenshot  # ✅ Import OCR check function
+from utils import is_unreachable_screenshot  # Import OCR check function
 
 def write_results_to_excel(results, output_path="results.xlsx"):
     """
