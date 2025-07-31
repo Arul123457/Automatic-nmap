@@ -12,11 +12,22 @@ def run_selenium_on_targets(targets, screenshot_dir="screenshots", progress_call
     results = []
 
     options = Options()
-    options.headless = True
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--window-size=1920,1080")
-    options.add_argument("--ignore-certificate-errors")
+
+    # ✅ Prevent Chrome popup window — silent, invisible mode
+    options.add_argument("--headless=new")  # New stable headless mode
+    options.add_argument("--disable-gpu")  # Prevents GPU usage for better performance in headless
+    options.add_argument("--no-sandbox")  # Required for root users or Docker
+    options.add_argument("--disable-dev-shm-usage")  # Fix crashes on systems with low shared memory
+    options.add_argument("--disable-extensions")  # Prevents extensions from launching
+    options.add_argument("--disable-infobars")  # Removes "Chrome is being controlled" bar
+    options.add_argument("--disable-notifications")  # Prevent popups/notifications
+    options.add_argument("--window-size=1920,1080")  # Standard full HD window size
+    options.add_argument("--ignore-certificate-errors")  # Accept invalid/self-signed certs
+    options.add_argument("--start-maximized")  # Prevents initial small window if not headless
+
+    # 🛑 Optional: Turn off verbose logs
+    options.add_experimental_option("excludeSwitches", ["enable-logging"])
+    options.add_experimental_option("useAutomationExtension", False)
 
     driver = webdriver.Chrome(options=options)
 
@@ -36,7 +47,6 @@ def run_selenium_on_targets(targets, screenshot_dir="screenshots", progress_call
             driver.get(url)
             time.sleep(2)
 
-            # ⏩ Bypass SSL warning if needed
             if "privacy error" in driver.title.lower() or "your connection is not private" in driver.page_source.lower():
                 try:
                     driver.find_element(By.ID, "details-button").click()
@@ -47,7 +57,6 @@ def run_selenium_on_targets(targets, screenshot_dir="screenshots", progress_call
                 except Exception as e:
                     print(f"[WARN] Couldn't auto-bypass SSL warning on {url}: {e}")
 
-            # 🚫 Skip unreachable pages based on known error messages
             error_indicators = [
                 "this site can’t be reached",
                 "this page isn’t working",
@@ -61,7 +70,6 @@ def run_selenium_on_targets(targets, screenshot_dir="screenshots", progress_call
             if any(error in page_text for error in error_indicators):
                 print(f"[✘] Skipped unreachable: {url}")
             else:
-                # ✅ Save screenshot
                 filename = hashlib.md5(url.encode()).hexdigest() + ".png"
                 screenshot_path = os.path.join(screenshot_dir, filename)
                 driver.save_screenshot(screenshot_path)
@@ -76,7 +84,7 @@ def run_selenium_on_targets(targets, screenshot_dir="screenshots", progress_call
             print(f"[ERROR] {url}: {e}")
 
         if progress_callback:
-            progress_callback()  # ✅ Increment after each target (including skipped)
+            progress_callback()
 
     driver.quit()
     return results
